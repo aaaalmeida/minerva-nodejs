@@ -13,11 +13,11 @@
   "dependencies": {
     "dotenv": "^16.4.5",
     "express": "^4.21.1",
-    "neo4j-driver": "^5.26.0"
+    "neo4j-driver": "^5.26.0",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@types/node": "^22.7.5",
-    "tsc": "^2.0.4",
     "tsx": "^4.19.1",
     "typescript": "^5.6.3"
   }

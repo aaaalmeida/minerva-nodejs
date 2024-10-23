@@ -1,0 +1,1 @@
+export const PersonFullNameRegex = new RegExp("^[A-Za-zÀ-ÖØ-öø-ÿ]+(?:[' -][A-Za-zÀ-ÖØ-öø-ÿ]+)+$")
