@@ -1,29 +1,38 @@
 services:
   node:
-    image: "node:8"
+    image: "node:22"
     user: "node"
     working_dir: /home/node/app
     environment:
       - NODE_ENV=production
+      - NEO4J_URL=${NEO4J_URL}
     volumes:
       - ./:/home/node/app
     expose:
       - "${NODE_PORT}"
     ports:
-      # use if it is necessary to expose the container to the host machine
       - "${NODE_PORT}:${NODE_PORT}"
     command: "npm run dev"
-    
+    depends_on:
+      - neo4j
+    restart: always
+
   neo4j:
     image: neo4j:latest
     volumes:
-      - /$HOME/neo4j/logs:/logs
-      - /$HOME/neo4j/config:/config
-      - /$HOME/neo4j/data:/data
-      - /$HOME/neo4j/plugins:/plugins
+      - neo4j_data:/data
+      - neo4j_logs:/logs
+      - neo4j_config:/config
+      - neo4j_plugins:/plugins
     environment:
       - NEO4J_AUTH=${NEO4J_USER}/${NEO4J_PASSWRD}
     ports:
       - "${NEO4J_PORT}:${NEO4J_PORT}"
       - "7687:7687"
     restart: always
+
+volumes:
+  neo4j_data:
+  neo4j_logs:
+  neo4j_config:
+  neo4j_plugins:

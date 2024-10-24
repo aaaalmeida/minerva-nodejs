@@ -2,6 +2,10 @@ import { AccountSchema } from "@validation/AccountSchema"
 
 export class CreateAccount {
     execute(data: Object) {
-        return AccountSchema.parse(data)
+        try {
+            return AccountSchema.parse(data)
+        } catch (error) {
+            throw error
+        }
     }
 }
