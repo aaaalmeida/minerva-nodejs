@@ -4,9 +4,11 @@
     "module": "commonjs",
     "baseUrl": "./",
     "paths": {
+      "@domain/*": ["./src/domain/*"],
+      "@db/*": ["./src/infrastructure/db/*"],
+      "@route/*": ["./src/infrastructure/http/*"],
       "@regex/*": ["./src/shared/regex/*"],
       "@validation/*": ["./src/shared/validation/*"],
-      "@domain/*": ["./src/domain/*"]
     },
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,

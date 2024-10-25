@@ -9,9 +9,9 @@ services:
     volumes:
       - ./:/home/node/app
     expose:
-      - "${NODE_PORT}"
+      - "3000"
     ports:
-      - "${NODE_PORT}:${NODE_PORT}"
+      - "3000:3000"
     command: "npm run dev"
     depends_on:
       - neo4j
