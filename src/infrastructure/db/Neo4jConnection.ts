@@ -1,49 +1,53 @@
 import dotenv from 'dotenv'
 dotenv.config()
 
-import neo4j, { Driver } from 'neo4j-driver'
+import neo4j, { Driver, Session } from 'neo4j-driver'
 
-const db_url = process.env.NEO4J_URL || 'neo4j://localhost:7687'
+const db_url = process.env.NEO4J_URL || 'bolt://localhost:7687'
 const db_user = process.env.NEO4J_USER || 'neo4j'
 const db_password = process.env.NEO4J_PASSWRD || 'neo4j'
 const db_name = process.env.NEO4J_NAME || 'neo4j'
 
-let driver: Driver | null
+export class Neo4jConnection {
+    private driver: Driver | null = null
 
-export const initDriver = async () => {
-    try {
-        const driver = neo4j.driver(db_url, neo4j.auth.basic(db_user, db_password))
-        await driver.getServerInfo()
-        return driver
-    } catch (e) { throw e }
-}
+    async initDriver() {
+        try {
+            this.driver = neo4j.driver(db_url, neo4j.auth.basic(db_user, db_password))
+            await this.driver.getServerInfo()
+            return this.driver
+        } catch (e) { throw e }
+    }
 
-export const getDriver = () => {
-    return driver
-}
+    getDriver() {
+        return this.driver
+    }
 
-export const closeDriver = async () => {
-    if (driver) await driver.close()
-}
+    async closeSession(session: Session) {
+        if (session) await session.close()
+    }
 
-export const getReadSession = () => {
-    try {
-        if (!driver) throw Error("Driver not initialized")
+    getReadSession() {
+        try {
+            if (!this.driver) throw Error("Driver not initialized")
 
-        return driver.session({
-            defaultAccessMode: 'READ',
-            database: db_name
-        })
-    } catch (e) { throw e }
-}
+            const session = this.driver.session({
+                defaultAccessMode: 'READ',
+                database: db_name
+            })
+            return session
+        } catch (e) { throw e }
+    }
 
-export const getWriteSession = () => {
-    try {
-        if (!driver) throw Error("Driver not initialized")
+    getWriteSession() {
+        try {
+            if (!this.driver) throw Error("Driver not initialized")
 
-        return driver.session({
-            defaultAccessMode: 'WRITE',
-            database: db_name
-        })
-    } catch (e) { throw e }
+            const session = this.driver.session({
+                defaultAccessMode: 'WRITE',
+                database: db_name
+            })
+            return session
+        } catch (e) { throw e }
+    }
 }

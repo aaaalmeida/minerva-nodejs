@@ -5,9 +5,9 @@ import { PasswordRegex } from '@regex/PasswordRegex'
 import { IAccount } from '@domain/IAccount'
 
 export const AccountSchema = z.object({
-    fullname: z.string().trim().regex(PersonFullNameRegex),
-    email: z.string().trim().email().regex(EmailRegex),
-    password: z.string().trim().regex(PasswordRegex)
+    fullname: z.string({ message: 'name' }).regex(PersonFullNameRegex, { message: 'regex name' }),
+    email: z.string({ message: 'email' }).regex(EmailRegex, { message: 'regex email' }),
+    password: z.string({ message: 'password' }).regex(PasswordRegex, { message: 'regex passwd' })
 })
 
 export const PartialAccountSchema = (data: Partial<IAccount>) => {

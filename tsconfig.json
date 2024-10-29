@@ -7,6 +7,7 @@
       "@domain/*": ["./src/domain/*"],
       "@db/*": ["./src/infrastructure/db/*"],
       "@route/*": ["./src/infrastructure/http/*"],
+      "@usecase/*": ["./src/application/*"],
       "@regex/*": ["./src/shared/regex/*"],
       "@validation/*": ["./src/shared/validation/*"],
     },

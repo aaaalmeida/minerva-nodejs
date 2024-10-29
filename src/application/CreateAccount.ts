@@ -4,11 +4,12 @@ import { AccountSchema } from "@validation/AccountSchema"
 export class CreateAccount {
     constructor(private accountController: AccountController) { }
 
-    execute(data: Object) {
+    async execute(data: Object) {
         try {
             const account = AccountSchema.parse(data)
-            this.accountController.insertAccount(account)
+            return await this.accountController.insertAccount(account)
         } catch (error) {
+            console.log(error)
             throw error
         }
     }
