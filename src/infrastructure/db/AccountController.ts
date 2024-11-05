@@ -1,6 +1,7 @@
 import { Neo4jConnection } from "@db/Neo4jConnection"
 import { IAccount } from "@domain/IAccount"
 import { Driver, Session } from "neo4j-driver"
+import { v4 as uuidv4 } from "uuid"
 
 // TODO: add error treatment
 // TODO: find a way to close session after use
@@ -18,11 +19,14 @@ export class AccountController {
         try {
             if (!this.driver) await this.init()
 
+            account.uuid = uuidv4()
+
             this.session = this.dbConnection.getWriteSession()
-            return await this.session.run(
-                "CREATE (n:Account $props) RETURN n",
+            const { records } = await this.session.run(
+                "CREATE (newAccount:Account $props) RETURN newAccount",
                 { props: account }
             )
+            return records.at(0)?.toObject().newAccount
         } catch (e) { throw e }
         // finally { if (this.session) this.dbConnection.closeSession(this.session) }
     }
@@ -48,9 +52,10 @@ export class AccountController {
             if (!this.driver) await this.init()
 
             this.session = this.dbConnection.getReadSession()
-            return await this.session.run(
-                "MATCH (n:Account) RETURN n"
+            const { records } = await this.session.run(
+                "MATCH (account:Account) RETURN account"
             )
+            return records.map(r => r.toObject().account)
         } catch (e) { throw e }
         // finally { if (this.session) this.dbConnection.closeSession(this.session) }
     }

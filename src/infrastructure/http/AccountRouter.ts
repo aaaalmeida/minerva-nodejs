@@ -1,11 +1,11 @@
 import { Router, Request, Response } from "express"
 import { AccountController } from "@db/AccountController"
-import { CreateAccount } from "@usecase/CreateAccount"
-import { ListAllAccount } from "@usecase/ListAllAccount"
+import { CreateAccount } from "@usecase/Account/CreateAccount"
+import { ListAllAccount } from "@usecase/Account/ListAllAccount"
 import { IAccount } from "@domain/IAccount"
 import { Neo4jConnection } from "@db/Neo4jConnection"
-import { UpdateAccountProperties } from "@usecase/UpdateAccountProperties"
-import { FindAccount } from "@usecase/FindAccount"
+import { UpdateAccountProperties } from "@usecase/Account/UpdateAccountProperties"
+import { FindAccount } from "@usecase/Account/FindAccount"
 
 // TODO: fix status code
 export const accountRouter = Router()
