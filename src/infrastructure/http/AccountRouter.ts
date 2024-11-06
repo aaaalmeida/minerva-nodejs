@@ -6,8 +6,10 @@ import { IAccount } from "@domain/IAccount"
 import { Neo4jConnection } from "@db/Neo4jConnection"
 import { UpdateAccountProperties } from "@usecase/Account/UpdateAccountProperties"
 import { FindAccount } from "@usecase/Account/FindAccount"
+import { FollowOtherAccount } from "@usecase/Account/FollowOtherAccount"
 
 // TODO: fix status code
+// TODO: add error handling
 export const accountRouter = Router()
 
 const accountController = new AccountController(new Neo4jConnection)
@@ -19,6 +21,17 @@ accountRouter.post("/", async (req: Request, res: Response) => {
         res.status(201).send(await createAccountUseCase.execute(data))
     } catch (error) {
         res.status(500).send("Could not create account")
+    }
+})
+
+accountRouter.post("/follow", async (req: Request, res: Response) => {
+    try {
+        const { followerId, followedId } = req.body
+        const followAccountUseCase = new FollowOtherAccount(accountController)
+        res.status(201).send(await followAccountUseCase.execute(followerId, followedId))
+    }
+    catch (e) {
+        res.status(500).send("Could not follow account")
     }
 })
 
@@ -41,6 +54,7 @@ accountRouter.get("/:id", async (req: Request, res: Response) => {
     }
 })
 
+// FIXME:
 accountRouter.patch("/", async (req: Request, res: Response) => {
     try {
         const { elementID, accountProperties } = req.body

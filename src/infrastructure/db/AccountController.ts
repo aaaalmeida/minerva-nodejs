@@ -26,11 +26,12 @@ export class AccountController {
                 "CREATE (newAccount:Account $props) RETURN newAccount",
                 { props: account }
             )
-            return records.at(0)?.toObject().newAccount
+            return records.at(0)?.get("newAccount")
         } catch (e) { throw e }
         // finally { if (this.session) this.dbConnection.closeSession(this.session) }
     }
 
+    // FIXME:
     async alterAccountProperties(accountPartial: Partial<IAccount>, elementID: string) {
         try {
             if (!this.driver) await this.init()
@@ -55,7 +56,7 @@ export class AccountController {
             const { records } = await this.session.run(
                 "MATCH (account:Account) RETURN account"
             )
-            return records.map(r => r.toObject().account)
+            return records.map(r => r.get("account"))
         } catch (e) { throw e }
         // finally { if (this.session) this.dbConnection.closeSession(this.session) }
     }
@@ -63,14 +64,40 @@ export class AccountController {
     async findAccountByElementID(id: string) {
         try {
             if (!this.driver) await this.init()
-            console.log('ID', id);
 
             this.session = this.dbConnection.getReadSession()
             const { records } = await this.session.run(
                 "MATCH (account:Account {uuid: $id}) RETURN account",
                 { id: id }
             )
-            return records.at(0)?.toObject().account
+            return records.at(0)?.get("account")
         } catch (e) { throw e }
+    }
+
+    async followAccount(baseId: string, followedId: string) {
+        try {
+            if (!this.driver) await this.init()
+
+            this.session = this.dbConnection.getWriteSession()
+            const { records } = await this.session.run(
+                `MATCH (baseAccount: Account {uuid: $baseId}),
+                (followedAccount: Account {uuid: $followedId})
+                CREATE (baseAccount)
+                -[relation:FOLLOWING {followUpDate: $followUpDate, followUpTime: $followUpTime}]->
+                (followedAccount)
+                RETURN relation`,
+                {
+                    baseId: baseId,
+                    followedId: followedId,
+                    followUpDate: new Date().toLocaleDateString(),
+                    followUpTime: new Date().toLocaleTimeString(),
+                }
+            )
+            console.log("record", records)
+
+            return records.at(0)?.get("relation")
+        } catch (e) {
+            throw e
+        }
     }
 }
