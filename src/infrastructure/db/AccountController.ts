@@ -66,10 +66,11 @@ export class AccountController {
             console.log('ID', id);
 
             this.session = this.dbConnection.getReadSession()
-            return await this.session.run(
-                "MATCH (n:Account {elementId: $id}) RETURN n",
+            const { records } = await this.session.run(
+                "MATCH (account:Account {uuid: $id}) RETURN account",
                 { id: id }
             )
+            return records.at(0)?.toObject().account
         } catch (e) { throw e }
     }
 }
