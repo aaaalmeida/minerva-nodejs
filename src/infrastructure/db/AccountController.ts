@@ -77,11 +77,7 @@ export class AccountController {
     async followAccount(baseId: string, followedId: string) {
         try {
             if (!this.driver) await this.init()
-
-            console.log(baseId);
-            console.log(followedId);
-
-
+                
             this.session = this.dbConnection.getWriteSession()
             const { records } = await this.session.run(
                 `MATCH (baseAccount: Account {uuid: $baseId}),
@@ -104,7 +100,7 @@ export class AccountController {
                 }
             )
 
-            return records.at(0)?.get("relation").get("properties")
+            return records.at(0)?.get("relation")
         } catch (e) {
             console.log(e);
 
