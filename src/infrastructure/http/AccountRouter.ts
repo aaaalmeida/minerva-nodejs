@@ -7,6 +7,8 @@ import { Neo4jConnection } from "@db/Neo4jConnection"
 import { UpdateAccountProperties } from "@usecase/Account/UpdateAccountProperties"
 import { FindAccount } from "@usecase/Account/FindAccount"
 import { FollowOtherAccount } from "@usecase/Account/FollowOtherAccount"
+import { DeleteAccount } from "@usecase/Account/DeleteAccount"
+import { UnfollowAccount } from "@usecase/Account/UnfollowAccount"
 
 // TODO: fix status code
 // TODO: add error handling
@@ -47,8 +49,8 @@ accountRouter.get("/", async (req: Request, res: Response) => {
 accountRouter.get("/:id", async (req: Request, res: Response) => {
     try {
         const elementID = req.params.id
-        const findAccountByElementID = new FindAccount(accountController)
-        res.status(200).send(await findAccountByElementID.execute(elementID))
+        const findAccountByElementIdUseCase = new FindAccount(accountController)
+        res.status(200).send(await findAccountByElementIdUseCase.execute(elementID))
     } catch (e) {
         res.status(500).send("Could not found account with this ID")
     }
@@ -62,5 +64,27 @@ accountRouter.patch("/", async (req: Request, res: Response) => {
         res.status(200).send(updateAccountUseCase.execute(accountProperties, elementID))
     } catch (error) {
         res.status(500).send("Could not update account")
+    }
+})
+
+accountRouter.delete("/:id", async (req: Request, res: Response) => {
+    try {
+        const id = req.params.id
+        const deleteAccountUseCase = new DeleteAccount(accountController)
+        deleteAccountUseCase.execute(id)
+        res.status(204).send("Account deleted")
+    } catch (e) {
+        res.status(500).send("Could not delete account")
+    }
+})
+
+accountRouter.delete("/unfollow", async (req: Request, res: Response) => {
+    try {
+        const { baseAccountId, unfollowedAccountId } = req.body
+        const unfollowAccountUseCase = new UnfollowAccount(accountController)
+        unfollowAccountUseCase.execute(baseAccountId, unfollowedAccountId)
+        res.status(204).send("Account unfollowed")
+    } catch (e) {
+        res.status(500).send("Could not unfollow account")
     }
 })

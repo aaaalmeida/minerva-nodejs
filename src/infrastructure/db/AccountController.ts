@@ -78,24 +78,74 @@ export class AccountController {
         try {
             if (!this.driver) await this.init()
 
+            console.log(baseId);
+            console.log(followedId);
+
+
             this.session = this.dbConnection.getWriteSession()
             const { records } = await this.session.run(
                 `MATCH (baseAccount: Account {uuid: $baseId}),
                 (followedAccount: Account {uuid: $followedId})
                 CREATE (baseAccount)
-                -[relation:FOLLOWING {followUpDate: $followUpDate, followUpTime: $followUpTime}]->
-                (followedAccount)
+                -[relation:FOLLOWING 
+                    {
+                        uuid: $followId,
+                        followUpDate: $followUpDate,
+                        followUpTime: $followUpTime
+                    }
+                ]-> (followedAccount)
                 RETURN relation`,
                 {
                     baseId: baseId,
                     followedId: followedId,
+                    followId: uuidv4(),
                     followUpDate: new Date().toLocaleDateString(),
                     followUpTime: new Date().toLocaleTimeString(),
                 }
             )
-            console.log("record", records)
 
-            return records.at(0)?.get("relation")
+            return records.at(0)?.get("relation").get("properties")
+        } catch (e) {
+            console.log(e);
+
+            throw e
+        }
+    }
+
+    async unfollowAccount(baseId: string, unfollowedId: string) {
+        try {
+            if (!this.driver) await this.init()
+                console.log("baseId", baseId);
+                console.log("unfollowed", unfollowedId);
+
+            this.session = this.dbConnection.getWriteSession()
+            const { records } = await this.session.run(
+                `MATCH (account:Account {uuid: $baseId})
+                -[relation:FOLLOWING]->
+                (unfollowedAccount:Account {uuid: $unfollowedId})
+                RETURN relation`,
+                {
+                    baseId: baseId,
+                    unfollowedId: unfollowedId
+                })
+
+
+            console.log(records);
+
+        } catch (e) {
+            throw e
+        }
+    }
+
+    async deleteAccountWithoutRelations(id: string) {
+        try {
+            if (!this.driver) await this.init()
+
+            this.session = this.dbConnection.getWriteSession()
+            await this.session.run(
+                'MATCH (account: Account {uuid: $id}) DELETE account',
+                { id: id }
+            )
         } catch (e) {
             throw e
         }

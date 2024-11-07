@@ -9,7 +9,6 @@ export class CreateAccount {
             const account = AccountSchema.parse(data)
             return await this.accountController.insertAccount(account)
         } catch (error) {
-            console.log(error)
             throw error
         }
     }

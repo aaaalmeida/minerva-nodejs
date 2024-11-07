@@ -7,7 +7,6 @@ export class ListAllAccount {
         try {
             return await this.accountController.matchAllAccount()
         } catch (e) {
-            console.log(e)
             throw e
         }
     }
