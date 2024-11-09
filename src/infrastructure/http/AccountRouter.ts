@@ -37,6 +37,41 @@ accountRouter.post("/follow", async (req: Request, res: Response) => {
     }
 })
 
+
+/**
+ * @swagger
+ * /account:
+ *   get:
+ *     summary: Return all accounts
+ *     responses:
+ *       200:
+ *          description: A list of accounts
+ *          content: 
+ *              application/json:
+ *                  schema:
+ *                      type: array
+ *                      items: 
+ *                          type: object
+ *                          properties: 
+ *                              uuid: 
+ *                                  type: string
+ *                                  description: uuid auto-generated used to identification
+ *                                  example: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d'
+ *                              fullname:
+ *                                  type: string
+ *                                  description: Account name
+ *                                  example: "Arthur Almeida"    
+ *                              email:
+ *                                  type: string
+ *                                  description: email related to account
+ *                                  example: "example@test.com"    
+ *                              password:
+ *                                  type: string
+ *                                  description: password to account
+ *                                  example: "passWORD#123"    
+ *       500:
+ *         description: Internal error
+ */
 accountRouter.get("/", async (req: Request, res: Response) => {
     try {
         const listAllAccountUseCase = new ListAllAccount(accountController)

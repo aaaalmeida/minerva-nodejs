@@ -1,16 +1,21 @@
 import dotenv from 'dotenv'
 dotenv.config()
 
-import express from 'express'
+import express, { Express } from 'express'
+
 import { accountRouter } from '@route/AccountRouter'
+import { swaggerRouter } from '@route/SwaggerRouter'
 
-process.env.TZ = "America/Sao_Paulo"
 const PORT = process.env.NODE_PORT || 3000
-const app = express()
+process.env.TZ = "America/Sao_Paulo"
 
-app.get('/', (req, res) => { res.send('Hello World!') })
+const app: Express = express()
+
 
 app.use(express.json())
 app.use('/account', accountRouter)
+app.use('/api-docs', swaggerRouter)
+
+app.get('/', (req, res) => { res.send('Hello World!') })
 
 app.listen(PORT, () => console.log(`node server on port ${PORT} ${new Date().toLocaleTimeString()}`))
