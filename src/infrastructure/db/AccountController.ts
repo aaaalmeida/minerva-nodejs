@@ -1,5 +1,6 @@
 import { Neo4jConnection } from "@db/Neo4jConnection"
-import { IAccount } from "@domain/IAccount"
+import IAccount from "@domain/IAccount"
+import IFollow from "@domain/IFollow"
 import { Driver, Session } from "neo4j-driver"
 import { v4 as uuidv4 } from "uuid"
 
@@ -26,7 +27,7 @@ export class AccountController {
                 "CREATE (newAccount:Account $props) RETURN newAccount",
                 { props: account }
             )
-            return records.at(0)?.get("newAccount")
+            return records.at(0)?.get("newAccount").properties
         } catch (e) { throw e }
         // finally { if (this.session) this.dbConnection.closeSession(this.session) }
     }
@@ -77,7 +78,15 @@ export class AccountController {
     async followAccount(baseId: string, followedId: string) {
         try {
             if (!this.driver) await this.init()
-                
+
+            const followProps: IFollow = {
+                uuid: uuidv4(),
+                followerId: baseId,
+                followedId,
+                followUpDate: new Date().toLocaleDateString(),
+                followUpTime: new Date().toLocaleTimeString()
+            }
+
             this.session = this.dbConnection.getWriteSession()
             const { records } = await this.session.run(
                 `MATCH (baseAccount: Account {uuid: $baseId}),
@@ -92,11 +101,11 @@ export class AccountController {
                 ]-> (followedAccount)
                 RETURN relation`,
                 {
-                    baseId: baseId,
-                    followedId: followedId,
-                    followId: uuidv4(),
-                    followUpDate: new Date().toLocaleDateString(),
-                    followUpTime: new Date().toLocaleTimeString(),
+                    baseId: followProps.followedId,
+                    followedId: followProps.followedId,
+                    followId: followProps.uuid,
+                    followUpDate: followProps.followUpDate,
+                    followUpTime: followProps.followUpTime,
                 }
             )
 
@@ -111,8 +120,8 @@ export class AccountController {
     async unfollowAccount(baseId: string, unfollowedId: string) {
         try {
             if (!this.driver) await this.init()
-                console.log("baseId", baseId);
-                console.log("unfollowed", unfollowedId);
+            console.log("baseId", baseId);
+            console.log("unfollowed", unfollowedId);
 
             this.session = this.dbConnection.getWriteSession()
             const { records } = await this.session.run(

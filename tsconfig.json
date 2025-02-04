@@ -8,8 +8,10 @@
       "@db/*": ["./src/infrastructure/db/*"],
       "@route/*": ["./src/infrastructure/http/*"],
       "@usecase/*": ["./src/application/*"],
+      "@swagger/*": ["./src/infrastructure/swagger/*"],
       "@regex/*": ["./src/shared/regex/*"],
       "@validation/*": ["./src/shared/validation/*"],
+      "@uuid/*": ["./src/shared/uuid/*"]
     },
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,

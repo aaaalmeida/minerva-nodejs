@@ -6,6 +6,11 @@ import express, { Express } from 'express'
 import { accountRouter } from '@route/AccountRouter'
 import { swaggerRouter } from '@route/SwaggerRouter'
 
+
+import AreaController from '@db/AreaController'
+import { Neo4jConnection } from '@db/Neo4jConnection'
+import AreaRouter from '@route/AreaRouter'
+
 const PORT = process.env.NODE_PORT || 3000
 process.env.TZ = "America/Sao_Paulo"
 
@@ -13,9 +18,8 @@ const app: Express = express()
 
 
 app.use(express.json())
-app.use('/account', accountRouter)
-app.use('/api-docs', swaggerRouter)
-
-app.get('/', (req, res) => { res.send('Hello World!') })
+// app.use('/account', accountRouter)
+// app.use('/api-docs', swaggerRouter)
+app.use('/area', AreaRouter)
 
 app.listen(PORT, () => console.log(`node server on port ${PORT} ${new Date().toLocaleTimeString()}`))

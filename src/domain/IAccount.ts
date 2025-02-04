@@ -1,6 +1,11 @@
-export interface IAccount {
+export default interface IAccount {
     uuid?: string
-    fullname: string
+    name: string
+    middleName?: string
+    lastName: string
     email: string
     password: string
+    url?: string
+    phone?: string
+    registered: boolean
 }

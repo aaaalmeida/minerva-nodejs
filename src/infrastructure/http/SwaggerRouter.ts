@@ -2,6 +2,7 @@ import swaggerJsdoc from 'swagger-jsdoc'
 import swaggerUi from 'swagger-ui-express'
 import { Router } from 'express'
 
+import { schemas } from '@swagger/shaggerSchema'
 export const swaggerRouter = Router()
 
 const swaggerOptions = {
@@ -12,13 +13,10 @@ const swaggerOptions = {
             version: '1.0.0',
             description: 'Minerva API Documentation',
         },
+        components: {
+            schemas: schemas,
+        },
     },
-    servers: [
-        {
-            url: "localhost:3000",
-            description: "Development Server"
-        }
-    ],
     apis: ['./src/infrastructure/http/*.ts'],
 }
 
