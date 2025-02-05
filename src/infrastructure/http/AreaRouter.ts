@@ -4,6 +4,7 @@ import CreateArea from "@usecase/Area/CreateArea";
 import DeleteArea from "@usecase/Area/DeleteArea";
 import FindArea from "@usecase/Area/FindArea";
 import ListAllArea from "@usecase/Area/ListAllArea";
+import UpdateArea from "@usecase/Area/UpdateArea";
 import { Router, Request, Response } from "express";
 
 const AreaRouter = Router()
@@ -50,6 +51,10 @@ AreaRouter.delete("/:id", async (req: Request, res: Response) => {
 AreaRouter.patch("/:id", async (req: Request, res: Response) => {
     try {
         const id = req.params.id
+        const data = req.body
+
+        const updateArea = new UpdateArea(areaController)
+        res.status(200).send(await updateArea.execute(id, data))
     } catch (error) {
 
     }

@@ -16,8 +16,10 @@ process.env.TZ = "America/Sao_Paulo"
 
 const app: Express = express()
 
-
+// MIDDLEWARE
 app.use(express.json())
+
+// ROUTES
 // app.use('/account', accountRouter)
 // app.use('/api-docs', swaggerRouter)
 app.use('/area', AreaRouter)

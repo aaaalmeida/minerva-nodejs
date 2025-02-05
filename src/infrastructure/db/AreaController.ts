@@ -70,8 +70,8 @@ class AreaController {
             this.session = this.dbConnection.getWriteSession()
 
             return await this.session.run(
-                "MATCH (n: Area {uuid: $uuid}) SET ${name} RETURN n",
-                { uuid: uuid, name: area }
+                "MATCH (n: Area {uuid: $uuid}) SET ${area} RETURN n",
+                { uuid: uuid, area: area }
             )
         } catch (e) { throw e }
     }
