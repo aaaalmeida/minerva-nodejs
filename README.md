@@ -68,7 +68,7 @@ The application should now be running at your defined *NODE_PORT* or `http://loc
 
 ## Contact
 
-If you have any questions or need further information, feel free to contact me through the GitHub issues or by emailing [your-email@example.com](mailto:your-email@example.com).
+If you have any questions or need further information, feel free to contact me through the GitHub issues.
 
 ---
 
