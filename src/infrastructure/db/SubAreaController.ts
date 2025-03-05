@@ -1,8 +1,9 @@
 import { Driver, Session } from "neo4j-driver"
 import { Neo4jConnection } from "./Neo4jConnection"
 import IArea from "@domain/IArea"
+import ISubarea from "@domain/ISubarea"
 
-class AreaController {
+class SubAreaController {
     driver: Driver | null = null
     session: Session | null = null
 
@@ -12,25 +13,33 @@ class AreaController {
         this.driver = await this.dbConnection.initDriver()
     }
 
-    async insertArea(area: IArea) {
+    async insertSubArea(areaId: string, subarea: ISubarea) {
         try {
             if (!this.driver) await this.init()
             this.session = this.dbConnection.getWriteSession()
             const { records } = await this.session.run(
-                'MERGE (newArea: Area $props) RETURN newArea',
-                { props: area }
+                'MATCH (area: Area {uuid: $areaId})' +
+                'MERGE (subArea: Subarea {uuid: $subareaId})' +
+                'SET subArea.name = $subareaName' +
+                'MERGE (area)<-[:BELONGS_TO]-(subArea)' +
+                'RETURN subArea',
+                {
+                    areaId: areaId,
+                    subareaId: subarea.uuid,
+                    subareaName: subarea.name
+                }
             )
-            return records.at(0)?.get("newArea").properties
+            return records.at(0)?.get("subArea").properties
         } catch (e) { throw e }
     }
 
-    async deleteArea(id: string) {
+    async deleteSubArea(id: string) {
         try {
             if (!this.driver) await this.init()
 
             this.session = this.dbConnection.getWriteSession()
             await this.session.run(
-                'MATCH (area: Area {uuid: $id}) DETATCH DELETE area',
+                'MATCH (subarea: Subarea {uuid: $id}) DETACH DELETE subarea',
                 { id: id }
             )
         } catch (e) {
@@ -38,27 +47,34 @@ class AreaController {
         }
     }
 
-    async findAreaByElementID(id: string) {
+    async findSubAreaByElementID(id: string) {
         try {
             if (!this.driver) await this.init()
 
             this.session = this.dbConnection.getReadSession()
             const { records } = await this.session.run(
-                "MATCH (area:Area {uuid: $id}) RETURN area",
+                "MATCH (subarea:Area {uuid: $id}) RETURN subarea",
                 { id: id }
             )
-            return records.at(0)?.get("area").properties
+            return records.at(0)?.get("subarea").properties
         } catch (e) { throw e }
     }
 
-    async matchAllArea() {
+    async matchAllSubArea() {
         try {
             if (!this.driver) await this.init()
             this.session = this.dbConnection.getReadSession()
-            // const { records } = await this.session.run("MATCH (area: Area) RETURN area.uuid, area.name")
-            const { records } = await this.session.run("MATCH (area: Area) RETURN area")
-            // return records.map(r => {uuid: r._fields.uuid, name: r._fields.name})
-            return records.map(item => item.get('area').properties);
+            const { records } = await this.session.run("MATCH (subarea: Subarea) RETURN subarea")
+            return records.map(item => item.get('subarea').properties);
+        } catch (e) { throw e }
+    }
+
+    async matchAllSubAreaFromArea(id: string) {
+        try {
+            if (!this.driver) await this.init()
+            this.session = this.dbConnection.getReadSession()
+            const { records } = await this.session.run("MATCH (a: Area {uuid: $id}) RETURN subarea")
+            return records.map(item => item.get('subarea').properties);
         } catch (e) { throw e }
     }
 
@@ -72,10 +88,10 @@ class AreaController {
                 .map((key) => `area.${key} = $${key}`)
                 .join(", ")
 
-                
-                const query = `MATCH (area: Area {uuid: $uuid}) SET ${props} RETURN area`
-                // console.log(props);
-                // console.log(query);
+
+            const query = `MATCH (area: Area {uuid: $uuid}) SET ${props} RETURN area`
+            // console.log(props);
+            // console.log(query);
             const params = { uuid, ...area }
 
             return await this.session.run(query, params)
@@ -83,4 +99,4 @@ class AreaController {
     }
 }
 
-export default AreaController
+export default SubAreaController
